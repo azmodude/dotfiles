@@ -33,9 +33,12 @@ fi
 # stop pcscd for first use - it conflicts with gnupg when the latter is not configured to use it
 sudo systemctl stop pcscd || true
 
-# nuke .gnupg directory for clean install
-rm -rf "${HOME}/.gnupg"
-pkill gpg-agent || true
+# nuke .gnupg directory for clean install if yubikey is present
+# secret key is on there, publics we'll just fetch
+if ykman list | grep -qi yubikey; then
+  rm -rf "${HOME}/.gnupg"
+  pkill gpg-agent || true
+fi
 
 # import and trust our GPG Key
 GPGKEY=DEE550054AA972F6
